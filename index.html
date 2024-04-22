@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fruits_Fruits</title>
+  <style>
+    body{
+      background-color: rgb(156, 236, 80);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas{
+      background-image: url(./bg.png);
+      background-size: cover;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="1280" height="1080"></canvas>
+  <script>
+    // 캔버스 객체
+    var canvas, ctx, canvasBuffer, bufferCtx ;
+
+    // 고양이
+    var cat;
+    var sx,sy,sw = 60, sh = 35;
+
+    // 배경이미지
+    var background;
+
+    // 게임의 상태
+    var STATE_START = false;
+    var STATE_GAMEOVER = false;
+
+    window.addEventListener('load',initialize,false);
+
+    function initialize(){
+      canvas = document.getElementById('canvas');
+      if(canvas == null || canvas.getContext == null) return;
+
+      ctx = canvas.getContext('2d');
+      canvasBuffer = document.createElement('canvas');
+      canvasBuffer.width = canvas.width;
+      canvasBuffer.height = canvas.height;
+      bufferCtx = canvasBuffer.getContext('2d');
+
+      // 게임 시작 메시지
+      startMessage();
+
+      // 이미지 설정
+      setImage();
+
+    }
+
+
+
+    function setImage(){
+      cat = new Image();
+      cat.src = "cat.png";
+      background = new Image();
+      background.src = "bg.png";
+    }
+
+
+    function drawText(font, color, align, text, x, y){
+      ctx.font = font;
+      ctx.fillStyle = color;
+      ctx.textAlign = align;
+      ctx.fillText(text, canvas.width/2 + x, canvas.height/2 + y);
+    }
+    
+    function startMessage(){
+      drawText("bold 30px arial","#ffff00","center","Enter To Start", 0, 0);
+      drawText("bold 20px arial","#ffffff","center","조작 방향키 ←↑→↓", 0, 30);
+    }
+  </script>
+</body>
+</html>
