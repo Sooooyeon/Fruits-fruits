@@ -1,31 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fruits_Fruits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Do+Hyeon&display=swap" rel="stylesheet">
   <style>
-    body{
+    body {
       background-color: rgb(156, 236, 80);
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    canvas{
+
+    canvas {
       background-image: url(./bg.png);
       background-size: cover;
     }
   </style>
 </head>
+
 <body>
   <canvas id="canvas" width="1280" height="1080"></canvas>
   <script>
     // 캔버스 객체
-    var canvas, ctx, canvasBuffer, bufferCtx ;
+    var canvas, ctx, canvasBuffer, bufferCtx;
 
     // 고양이
     var cat;
-    var sx,sy,sw = 60, sh = 35;
+    var sx, sy, sw = 60, sh = 35;
 
     // 배경이미지
     var background;
@@ -34,11 +40,11 @@
     var STATE_START = false;
     var STATE_GAMEOVER = false;
 
-    window.addEventListener('load',initialize,false);
+    window.addEventListener('load', initialize, false);
 
-    function initialize(){
+    function initialize() {
       canvas = document.getElementById('canvas');
-      if(canvas == null || canvas.getContext == null) return;
+      if (canvas == null || canvas.getContext == null) return;
 
       ctx = canvas.getContext('2d');
       canvasBuffer = document.createElement('canvas');
@@ -56,7 +62,7 @@
 
 
 
-    function setImage(){
+    function setImage() {
       cat = new Image();
       cat.src = "cat.png";
       background = new Image();
@@ -64,17 +70,18 @@
     }
 
 
-    function drawText(font, color, align, text, x, y){
+    function drawText(font, color, align, text, x, y) {
       ctx.font = font;
       ctx.fillStyle = color;
       ctx.textAlign = align;
-      ctx.fillText(text, canvas.width/2 + x, canvas.height/2 + y);
+      ctx.fillText(text, canvas.width / 2 + x, canvas.height / 2 + y);
     }
-    
-    function startMessage(){
-      drawText("bold 30px arial","#ffff00","center","Enter To Start", 0, 0);
-      drawText("bold 20px arial","#ffffff","center","조작 방향키 ←↑→↓", 0, 30);
+
+    function startMessage() {
+      drawText("bold 100px Bagel Fat One", "#313B95", "center", "FruitsFruits", 20, -50);
+      drawText("bold 60px Do Hyeon", "#C73D34", "center", "Enter To Start", 0, 50);
     }
   </script>
 </body>
+
 </html>
