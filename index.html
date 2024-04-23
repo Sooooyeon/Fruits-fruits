@@ -27,7 +27,7 @@
   <canvas id="canvas" width="1280" height="1080"></canvas>
   <script>
     // 캔버스 객체
-    var canvas, ctx, canvasBuffer, bufferCtx;
+    var threadSpeed = 16, canvas, ctx, canvasBuffer, bufferCtx;
 
     // 고양이
     var cat;
@@ -40,7 +40,15 @@
     var STATE_START = false;
     var STATE_GAMEOVER = false;
 
+    // 키 상태 (게임시작 : enter, 게임다시 시작 : space, 방향키(4개))
+    var keyPressed = [];
+
+    // 타이머
+    var loopInstance;
+
     window.addEventListener('load', initialize, false);
+    window.addEventListener('keydown', getKeyDown, false);
+    window.addEventListener('keyup', getKeyUp, false);
 
     function initialize() {
       canvas = document.getElementById('canvas');
@@ -58,9 +66,9 @@
       // 이미지 설정
       setImage();
 
+      loopInstance = setInterval(update, threadSpeed);
+
     }
-
-
 
     function setImage() {
       cat = new Image();
@@ -79,7 +87,45 @@
 
     function startMessage() {
       drawText("bold 100px Bagel Fat One", "#313B95", "center", "FruitsFruits", 20, -50);
-      drawText("bold 60px Do Hyeon", "#C73D34", "center", "Enter To Start", 0, 50);
+      drawText("bold 60px Do Hyeon", "#000000", "center", "Enter To Start", 0, 40);
+    }
+
+    function startGame() {
+      STATE_START = true;
+      // 캐릭터 초기 위치
+      sx = canvas.width / 2;
+      sy = canvas.height / 2;
+      sw = 60;
+      sh = 35;
+    }
+
+    function drawGame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // 화면을 지웁니다.
+      ctx.drawImage(background, 0, 0, canvas.width, canvas.height); // 배경을 그립니다.
+      ctx.drawImage(cat, sx, sy, sw, sh); // 캐릭터를 그립니다.
+    }
+
+    function update() {
+      if ((keyPressed[13] === true) && (STATE_START === false)) {
+        startGame();
+      }
+
+      if (STATE_START) {
+        if (keyPressed[38]) { sy -= 5; }
+        if (keyPressed[40]) { sy += 5; }
+        if (keyPressed[37]) { sx -= 5; }
+        if (keyPressed[39]) { sx += 5; }
+        drawGame(); // 게임 화면을 그립니다.
+      }
+    }
+
+    function getKeyDown(event) {
+      // console.log(event)
+      keyPressed[event.keyCode] = true;
+    }
+
+    function getKeyUp(event) {
+      keyPressed[event.keyCode] = false;
     }
   </script>
 </body>
