@@ -24,14 +24,14 @@
 </head>
 
 <body>
-  <canvas id="canvas" width="1280" height="1080"></canvas>
+  <canvas id="canvas" width="1920" height="1575"></canvas>
   <script>
     // 캔버스 객체
     var threadSpeed = 16, canvas, ctx, canvasBuffer, bufferCtx;
 
     // 고양이
     var cat;
-    var sx, sy, sw = 60, sh = 35;
+    var sx, sy, sw = 190, sh = 263;
 
     // 배경이미지
     var background;
@@ -93,10 +93,8 @@
     function startGame() {
       STATE_START = true;
       // 캐릭터 초기 위치
-      sx = canvas.width / 2;
-      sy = canvas.height / 2;
-      sw = 60;
-      sh = 35;
+      sx = canvas.width / 2 - 95;
+      sy = canvas.height / 2 + 220;
     }
 
     function drawGame() {
@@ -111,10 +109,18 @@
       }
 
       if (STATE_START) {
-        if (keyPressed[38]) { sy -= 5; }
-        if (keyPressed[40]) { sy += 5; }
-        if (keyPressed[37]) { sx -= 5; }
-        if (keyPressed[39]) { sx += 5; }
+        if (keyPressed[37]) { sx -= 12; } // 왼쪽으로 이동 
+        if (keyPressed[39]) { sx += 12; } // 오른쪽으로 이동
+
+        // 고양이가 캔버스 왼쪽 경계를 넘지 않도록 함.
+        if (sx < 0) {
+          sx = 0;
+        }
+
+        // 고양이가 캔버스 오른쪽 경계를 넘지 않도록 함.
+        if (sx + sw > canvas.width) {
+          sx = canvas.width - sw;
+        }
         drawGame(); // 게임 화면을 그립니다.
       }
     }
