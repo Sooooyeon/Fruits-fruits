@@ -17,7 +17,7 @@
       margin: 0;
       height: 100vh;
       overflow: hidden;
-      
+
     }
 
     canvas {
@@ -29,7 +29,7 @@
 
 <body>
   <canvas id="canvas" width="1240" height="960"></canvas>
-  <!-- <audio src="./bgm.mp3" autoplay loop></audio> -->
+  <!-- <audio src="./source/bgm.mp3" autoplay loop></audio> -->
   <script>
     // 캔버스 객체
     var threadSpeed = 16, canvas, ctx, canvasBuffer, bufferCtx;
@@ -43,7 +43,7 @@
 
     // 과일
     var fruits = new Array();
-    var fruitsName = ['orange','peach','watermelon','pear','cherry']
+    var fruitsName = ['orange', 'peach', 'watermelon', 'pear', 'cherry']
     var fruitsSize = 54;
 
     // 게임의 상태
@@ -55,6 +55,9 @@
 
     // 타이머
     var loopInstance;
+
+    // 점수
+    var score = 0;
 
     window.addEventListener('load', initialize, false);
     window.addEventListener('keydown', getKeyDown, false);
@@ -137,7 +140,7 @@
         drawGame(); // 게임 화면을 그립니다.
 
         // 과일을 화면에 그리고, 위치를 업데이트하는 로직 추가
-        fruits.forEach(function(fruit, index) {
+        fruits.forEach(function (fruit, index) {
           fruit.y += fruit.speed; // 과일이 떨어지는 속도로 y좌표 업데이트
           // 과일 그리기 (이미지 로딩 및 그리기 로직 필요)
           fruitImage = new Image;
@@ -148,16 +151,34 @@
           if (fruit.y > canvas.height) {
             fruits.splice(index, 1);
           }
+
+          // 충돌 검사
+          if (checkCollision(fruit)) {
+            fruits.splice(index, 1); // 충돌한 과일 제거
+            score += 10; // 점수 증가
+          } else if (fruit.y > canvas.height) {
+            fruits.splice(index, 1); // 화면 밖으로 떨어진 과일 제거
+          }
         });
+        // 게임 화면에 점수 표시
+        drawText("bold 30px Do Hyeon", "#000000", "left", "Score: " + score, -60, -300);
       }
     }
 
-    function createFruits(){
+    function checkCollision(fruit) {
+      return sx < fruit.x + fruitsSize &&
+        sx + sw > fruit.x &&
+        sy < fruit.y + fruitsSize &&
+        sy + sh > fruit.y;
+    }
+
+
+    function createFruits() {
       // 과일 생성 간격을 랜덤으로 설정
-      var interval = Math.floor(Math.random()*(3000 - 1000 + 1)) + 1000; // 1초에서 3초사이
+      var interval = Math.floor(Math.random() * (1000 - 500 + 1)) + 1000; // 1초에서 3초사이
 
       // 과일 객체 생성
-      setTimeout(function() {
+      setTimeout(function () {
         var fruitIndex = Math.floor(Math.random() * fruitsName.length); // 랜덤한 과일 종류 선택
         var fruit = {
           name: fruitsName[fruitIndex], // 과일 이름
