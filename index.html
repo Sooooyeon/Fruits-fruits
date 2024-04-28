@@ -29,7 +29,8 @@
 
 <body>
   <canvas id="canvas" width="1240" height="960"></canvas>
-  <!-- <audio src="./source/bgm.mp3" autoplay loop></audio> -->
+  <audio src="./source/get.mp3" id="get"></audio>
+  <audio src="./source/bgm.mp3" autoplay loop id="bgm"></audio>
   <script>
     // 캔버스 객체
     var threadSpeed = 16, canvas, ctx, canvasBuffer, bufferCtx;
@@ -110,6 +111,10 @@
       sy = canvas.height / 2 + 160;
 
       createFruits();
+
+      // 배경음악 재생
+      var bgm = document.getElementById('bgm');
+      bgm.play();
     }
 
     function drawGame() {
@@ -154,11 +159,12 @@
 
           // 충돌 검사
           if (checkCollision(fruit)) {
+            // 음악 재생 로직 추가
+            document.getElementById('get').play();
             fruits.splice(index, 1); // 충돌한 과일 제거
             score += 10; // 점수 증가
-          } else if (fruit.y > canvas.height) {
-            fruits.splice(index, 1); // 화면 밖으로 떨어진 과일 제거
           }
+
         });
         // 게임 화면에 점수 표시
         drawText("bold 30px Do Hyeon", "#000000", "left", "Score: " + score, -60, -300);
@@ -175,7 +181,7 @@
 
     function createFruits() {
       // 과일 생성 간격을 랜덤으로 설정
-      var interval = Math.floor(Math.random() * (1000 - 500 + 1)) + 1000; // 1초에서 3초사이
+      var interval = Math.floor(Math.random() * (100 - 20 + 1)) + 1000; // 1초에서 3초사이
 
       // 과일 객체 생성
       setTimeout(function () {
@@ -184,7 +190,7 @@
           name: fruitsName[fruitIndex], // 과일 이름
           x: Math.floor(Math.random() * (canvas.width - fruitsSize)), // 랜덤한 x 위치
           y: -fruitsSize, // 화면 상단에서 시작
-          speed: Math.random() * 3 + 2 // 랜덤한 속도 (2 ~ 5)
+          speed: Math.random() * 5 + 5 // 랜덤한 속도
         };
 
         fruits.push(fruit); // 생성된 과일을 배열에 추가
