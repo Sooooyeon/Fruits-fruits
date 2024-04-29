@@ -30,7 +30,8 @@
 <body>
   <canvas id="canvas" width="1240" height="960"></canvas>
   <audio src="./source/get.mp3" id="get"></audio>
-  <!-- <audio src="./source/bgm.mp3" autoplay loop id="bgm"></audio> -->
+  <audio src="./source/gameover.mp3" id="gameover"></audio>
+  <audio src="./source/bgm.mp3" loop id="bgm"></audio>
   <script>
     // 캔버스 객체
     var threadSpeed = 16, canvas, ctx, canvasBuffer, bufferCtx;
@@ -85,9 +86,6 @@
       // 이미지 설정
       setImage();
 
-      // 바위 생성
-      createRock();
-
       loopInstance = setInterval(update, threadSpeed);
 
     }
@@ -120,19 +118,32 @@
 
       createFruits();
 
+      // 바위 생성
+      createRock();
+
       // 배경음악 재생
       var bgm = document.getElementById('bgm');
       bgm.play();
-      bgm.volume = 0.4;
+      bgm.volume = 0.3;
     }
 
     function drawGame() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // 화면을 지웁니다.
-      ctx.drawImage(background, 0, 0, canvas.width, canvas.height); // 배경을 그립니다.
-      ctx.drawImage(cat, sx, sy, sw, sh); // 캐릭터를 그립니다.
 
-      // 게임 화면에 점수 표시
-      drawText("bold 30px Do Hyeon", "#000000", "left", "Score: " + score, -60, -300);
+      if (!STATE_START) {
+        return
+      } else if (STATE_GAMEOVER) {
+        // 게임 오버 메시지 출력
+        STATE_START = false;
+        drawText("bold 30px arial", "#ffff00", "center", "Game Over", 0, 0);
+        drawText("bold 20px arial", "#ffffff", "center", "Spacebar to Restart", 0, 30);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // 화면을 지웁니다.
+        ctx.drawImage(background, 0, 0, canvas.width, canvas.height); // 배경을 그립니다.
+        ctx.drawImage(cat, sx, sy, sw, sh); // 캐릭터를 그립니다.
+
+        // 게임 화면에 점수 표시
+        drawText("bold 30px Do Hyeon", "#000000", "left", "Score: " + score, -60, -300);
+      }
     }
 
     function update() {
@@ -195,6 +206,8 @@
           // 장애물과 고양이의 충돌 검사
           if (checkCollision(rock)) {
             // 게임 종료 처리
+            document.getElementById('gameover').play();
+            document.getElementById('bgm').pause();
             STATE_START = false; // 게임 상태를 종료로 변경
             STATE_GAMEOVER = true;
             clearInterval(loopInstance); // 게임 루프 종료
@@ -248,7 +261,6 @@
     }
 
     function getKeyDown(event) {
-      // console.log(event)
       keyPressed[event.keyCode] = true;
     }
 
