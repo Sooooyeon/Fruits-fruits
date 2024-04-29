@@ -23,6 +23,7 @@
     canvas {
       background-image: url(./source/bg.png);
       background-size: cover;
+      height: 100vh;
     }
   </style>
 </head>
@@ -107,7 +108,8 @@
 
     function startMessage() {
       drawText("bold 100px Bagel Fat One", "#313B95", "center", "FruitsFruits", 20, -50);
-      drawText("bold 60px Do Hyeon", "#000000", "center", "Enter To Start", 0, 40);
+      drawText("bold 60px Do Hyeon", "#000000", "center", "Enter To Start", 0, 30);
+      drawText("bold 30px Do Hyeon", "#000000", "center", "방향키로 조작하며, 바위와 충돌 시 게임이 종료돼요!", 0, 80);
     }
 
     function startGame() {
@@ -128,26 +130,16 @@
     }
 
     function drawGame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // 화면을 지웁니다.
+      ctx.drawImage(background, 0, 0, canvas.width, canvas.height); // 배경을 그립니다.
+      ctx.drawImage(cat, sx, sy, sw, sh); // 캐릭터를 그립니다.
 
-      if (!STATE_START) {
-        return
-      } else if (STATE_GAMEOVER) {
-        // 게임 오버 메시지 출력
-        STATE_START = false;
-        drawText("bold 30px arial", "#ffff00", "center", "Game Over", 0, 0);
-        drawText("bold 20px arial", "#ffffff", "center", "Spacebar to Restart", 0, 30);
-      } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // 화면을 지웁니다.
-        ctx.drawImage(background, 0, 0, canvas.width, canvas.height); // 배경을 그립니다.
-        ctx.drawImage(cat, sx, sy, sw, sh); // 캐릭터를 그립니다.
-
-        // 게임 화면에 점수 표시
-        drawText("bold 30px Do Hyeon", "#000000", "left", "Score: " + score, -60, -300);
-      }
+      // 게임 화면에 점수 표시
+      drawText("bold 30px Do Hyeon", "#000000", "left", "Score: " + score, -60, -300);
     }
 
     function update() {
-      if ((keyPressed[13] === true) && (STATE_START === false)) {
+      if ((keyPressed[13] === true) && (STATE_START === false) && (STATE_GAMEOVER === false)) {
         startGame();
       }
 
@@ -208,11 +200,20 @@
             // 게임 종료 처리
             document.getElementById('gameover').play();
             document.getElementById('bgm').pause();
-            STATE_START = false; // 게임 상태를 종료로 변경
+            STATE_START = false;
             STATE_GAMEOVER = true;
-            clearInterval(loopInstance); // 게임 루프 종료
           }
         });
+      } else if (STATE_GAMEOVER) {
+        // 게임 오버 메시지 출력
+        STATE_START = false;
+        drawText("bold 100px arial", "#313B95", "center", "Game Over", 0, -30);
+        drawText("bold 50px arial", "#000000", "center", "Spacebar to Restart", 0, 30);
+      }
+
+      if (keyPressed[32] === true) {
+        document.location.reload();
+        startGame();
       }
     }
 
