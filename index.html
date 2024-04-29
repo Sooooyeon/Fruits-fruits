@@ -32,6 +32,7 @@
   <canvas id="canvas" width="1240" height="960"></canvas>
   <audio src="./source/get.mp3" id="get"></audio>
   <audio src="./source/gameover.mp3" id="gameover"></audio>
+  <audio src="./source/win.mp3" id="win"></audio>
   <audio src="./source/bgm.mp3" loop id="bgm"></audio>
   <script>
     // 캔버스 객체
@@ -56,6 +57,7 @@
     // 게임의 상태
     var STATE_START = false;
     var STATE_GAMEOVER = false;
+    var STATE_WIN = false;
 
     // 키 상태 (게임시작 : enter, 게임다시 시작 : space, 방향키)
     var keyPressed = [];
@@ -98,9 +100,10 @@
     }
 
     function startMessage() {
-      drawText("bold 100px Bagel Fat One", "#313B95", "center", "FruitsFruits", 20, -50);
-      drawText("bold 60px Do Hyeon", "#000000", "center", "Enter To Start", 0, 30);
-      drawText("bold 30px Do Hyeon", "#000000", "center", "방향키로 조작하며, 바위와 충돌 시 게임이 종료돼요!", 0, 80);
+      drawText("bold 100px Bagel Fat One", "#313B95", "center", "FruitsFruits", 20, -60);
+      drawText("bold 60px Do Hyeon", "#000000", "center", "Enter To Start", 0, 20);
+      drawText("bold 30px Do Hyeon", "#000000", "center", "방향키로 조작하며, 바위와 충돌 시 게임이 종료돼요!", 0, 70);
+      drawText("bold 30px Do Hyeon", "#000000", "center", "100점 이상 획득시 승리!", 0, 110);
     }
 
     function startGame() {
@@ -227,7 +230,7 @@
         getSound.play();
         getSound.volume = 0.3;
         fruits.splice(index, 1);
-        score += 10;
+        score += 3;
       }
     }
 
@@ -241,6 +244,10 @@
 
       if (checkCollision(rock)) {
         endGame();
+      }
+
+      if (score >= 100) {
+        winGame()
       }
     }
 
@@ -258,6 +265,14 @@
       STATE_GAMEOVER = true;
     }
 
+    function winGame() {
+      document.getElementById('win').play();
+      document.getElementById('bgm').pause();
+      STATE_START = false;
+      STATE_GAMEOVER = true;
+      STATE_WIN = true;
+    }
+
     function update() {
       handleKeyPress();
 
@@ -265,6 +280,9 @@
         updatePlayerPosition(); // 고양이 위치 업데이트
         drawGame(); // 게임화면을 그려냄
         drawObjects(); // 과일과 바위를 그려냄
+      } else if (STATE_WIN) {
+        drawText("bold 100px arial", "#313B95", "center", "You Win!", 0, -30);
+        drawText("bold 50px arial", "#000000", "center", "Spacebar to Restart", 0, 30);
       } else if (STATE_GAMEOVER) {
         drawText("bold 100px arial", "#313B95", "center", "Game Over", 0, -30);
         drawText("bold 50px arial", "#000000", "center", "Spacebar to Restart", 0, 30);
