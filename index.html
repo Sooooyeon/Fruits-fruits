@@ -47,6 +47,9 @@
     var fruitsName = ['orange', 'peach', 'watermelon', 'pear', 'cherry']
     var fruitsSize = 54;
 
+    // 바위
+    var rocks = new Array();
+
     // 게임의 상태
     var STATE_START = false;
     var STATE_GAMEOVER = false;
@@ -80,8 +83,11 @@
       // 이미지 설정
       setImage();
 
-      loopInstance = setInterval(update, threadSpeed);
+      // 바위 생성
+      createRock();
 
+      loopInstance = setInterval(update, threadSpeed);
+      
     }
 
     function setImage() {
@@ -115,12 +121,16 @@
       // 배경음악 재생
       var bgm = document.getElementById('bgm');
       bgm.play();
+      bgm.volume = 0.4;
     }
 
     function drawGame() {
       ctx.clearRect(0, 0, canvas.width, canvas.height); // 화면을 지웁니다.
       ctx.drawImage(background, 0, 0, canvas.width, canvas.height); // 배경을 그립니다.
       ctx.drawImage(cat, sx, sy, sw, sh); // 캐릭터를 그립니다.
+
+      // 게임 화면에 점수 표시
+      drawText("bold 30px Do Hyeon", "#000000", "left", "Score: " + score, -60, -300);
     }
 
     function update() {
@@ -166,8 +176,28 @@
           }
 
         });
-        // 게임 화면에 점수 표시
-        drawText("bold 30px Do Hyeon", "#000000", "left", "Score: " + score, -60, -300);
+
+        // 장애물을 화면에 그리고, 위치를 업데이트
+        rocks.forEach(function (rock, index) {
+          rock.y += rock.speed; // 장애물이 떨어지는 속도로 y좌표 업데이트
+          // 장애물 그리기 (여기서는 간단하게 과일과 동일한 크기의 빨간색 사각형으로 표현합니다)
+          rockImage = new Image;
+          rockImage.src = `./source/rock.png`;
+          ctx.drawImage(rockImage, rock.x, rock.y, 93, 66);
+
+          // 장애물이 화면 밖으로 떨어지면 배열에서 제거
+          if (rock.y > canvas.height) {
+              rocks.splice(index, 1);
+          }
+
+          // 장애물과 고양이의 충돌 검사
+          if (checkCollision(rock)) {
+              // 게임 종료 처리
+              STATE_START = false; // 게임 상태를 종료로 변경
+              STATE_GAMEOVER = true;
+              clearInterval(loopInstance); // 게임 루프 종료
+          }
+        });
       }
     }
 
@@ -178,10 +208,9 @@
         sy + sh > fruit.y;
     }
 
-
     function createFruits() {
       // 과일 생성 간격을 랜덤으로 설정
-      var interval = Math.floor(Math.random() * (100 - 20 + 1)) + 1000; // 1초에서 3초사이
+      var interval = Math.floor(Math.random() * (100 - 20 + 1)) + 1000; // 
 
       // 과일 객체 생성
       setTimeout(function () {
@@ -199,6 +228,21 @@
       }, interval);
     }
 
+    function createRock() {
+      var interval = Math.floor(Math.random() * (100 - 20 + 1)) + 1000;
+
+      setTimeout(function () {
+          var rock = {
+              x: Math.floor(Math.random() * (canvas.width - fruitsSize)), // 랜덤한 x 위치
+              y: -fruitsSize, // 화면 상단에서 시작
+              speed: Math.random() * 5 + 5 // 장애물 속도를 과일보다 느리게 설정
+          };
+
+          rocks.push(rock); // 생성된 장애물을 배열에 추가
+
+          createRock(); // 재귀적으로 호출하여 계속해서 장애물 생성
+      }, interval);
+    }
 
     function getKeyDown(event) {
       // console.log(event)
