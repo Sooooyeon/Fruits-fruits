@@ -2,12 +2,12 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fruits_Fruits</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Do+Hyeon&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fruits_Fruits</title>
   <style>
     body {
       background-color: rgb(156, 236, 80);
@@ -38,8 +38,7 @@
     var threadSpeed = 16, canvas, ctx, canvasBuffer, bufferCtx;
 
     // 고양이
-    var cat;
-    var sx, sy, sw = 100, sh = 138;
+    var cat, sx, sy, sw = 100, sh = 138;
 
     // 배경이미지
     var background;
@@ -58,7 +57,7 @@
     var STATE_START = false;
     var STATE_GAMEOVER = false;
 
-    // 키 상태 (게임시작 : enter, 게임다시 시작 : space, 방향키(4개))
+    // 키 상태 (게임시작 : enter, 게임다시 시작 : space, 방향키)
     var keyPressed = [];
 
     // 타이머
@@ -98,14 +97,6 @@
       background.src = "./source/bg.png";
     }
 
-
-    function drawText(font, color, align, text, x, y) {
-      ctx.font = font;
-      ctx.fillStyle = color;
-      ctx.textAlign = align;
-      ctx.fillText(text, canvas.width / 2 + x, canvas.height / 2 + y);
-    }
-
     function startMessage() {
       drawText("bold 100px Bagel Fat One", "#313B95", "center", "FruitsFruits", 20, -50);
       drawText("bold 60px Do Hyeon", "#000000", "center", "Enter To Start", 0, 30);
@@ -118,6 +109,7 @@
       sx = canvas.width / 2 - 95;
       sy = canvas.height / 2 + 160;
 
+      // 과일 생성
       createFruits();
 
       // 바위 생성
@@ -129,136 +121,162 @@
       bgm.volume = 0.3;
     }
 
+
+    function drawText(font, color, align, text, x, y) {
+      ctx.font = font;
+      ctx.fillStyle = color;
+      ctx.textAlign = align;
+      ctx.fillText(text, canvas.width / 2 + x, canvas.height / 2 + y);
+    }
+
     function drawGame() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // 화면을 지웁니다.
-      ctx.drawImage(background, 0, 0, canvas.width, canvas.height); // 배경을 그립니다.
-      ctx.drawImage(cat, sx, sy, sw, sh); // 캐릭터를 그립니다.
+      // 시작 화면을 지우고 게임 화면을 그림
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(cat, sx, sy, sw, sh);
 
       // 게임 화면에 점수 표시
       drawText("bold 30px Do Hyeon", "#000000", "left", "Score: " + score, -60, -300);
     }
 
-    function update() {
-      if ((keyPressed[13] === true) && (STATE_START === false) && (STATE_GAMEOVER === false)) {
+    function handleKeyPress() {
+      if ((keyPressed[13] === true) && !STATE_START && !STATE_GAMEOVER) {
         startGame();
       }
-
-      if (STATE_START) {
-
-        if (keyPressed[37]) { sx -= 12; } // 왼쪽으로 이동 
-        if (keyPressed[39]) { sx += 12; } // 오른쪽으로 이동
-
-        // 고양이가 캔버스 왼쪽 경계를 넘지 않도록 함.
-        if (sx < 0) {
-          sx = 0;
-        }
-
-        // 고양이가 캔버스 오른쪽 경계를 넘지 않도록 함.
-        if (sx + sw > canvas.width) {
-          sx = canvas.width - sw;
-        }
-        drawGame(); // 게임 화면을 그립니다.
-
-        // 과일을 화면에 그리고, 위치를 업데이트하는 로직 추가
-        fruits.forEach(function (fruit, index) {
-          fruit.y += fruit.speed; // 과일이 떨어지는 속도로 y좌표 업데이트
-          // 과일 그리기 (이미지 로딩 및 그리기 로직 필요)
-          fruitImage = new Image;
-          fruitImage.src = `./source/${fruit.name}.png`;
-          ctx.drawImage(fruitImage, fruit.x, fruit.y, fruitsSize, fruitsSize);
-
-          // 과일이 화면 밖으로 떨어지면 배열에서 제거
-          if (fruit.y > canvas.height) {
-            fruits.splice(index, 1);
-          }
-
-          // 충돌 검사
-          if (checkCollision(fruit)) {
-            // 음악 재생 로직 추가
-            document.getElementById('get').play();
-            fruits.splice(index, 1); // 충돌한 과일 제거
-            score += 10; // 점수 증가
-          }
-
-        });
-
-        // 장애물을 화면에 그리고, 위치를 업데이트
-        rocks.forEach(function (rock, index) {
-          rock.y += rock.speed; // 장애물이 떨어지는 속도로 y좌표 업데이트
-          // 장애물 그리기 (여기서는 간단하게 과일과 동일한 크기의 빨간색 사각형으로 표현합니다)
-          rockImage = new Image;
-          rockImage.src = `./source/rock.png`;
-          ctx.drawImage(rockImage, rock.x, rock.y, 93, 66);
-
-          // 장애물이 화면 밖으로 떨어지면 배열에서 제거
-          if (rock.y > canvas.height) {
-            rocks.splice(index, 1);
-          }
-
-          // 장애물과 고양이의 충돌 검사
-          if (checkCollision(rock)) {
-            // 게임 종료 처리
-            document.getElementById('gameover').play();
-            document.getElementById('bgm').pause();
-            STATE_START = false;
-            STATE_GAMEOVER = true;
-          }
-        });
-      } else if (STATE_GAMEOVER) {
-        // 게임 오버 메시지 출력
-        STATE_START = false;
-        drawText("bold 100px arial", "#313B95", "center", "Game Over", 0, -30);
-        drawText("bold 50px arial", "#000000", "center", "Spacebar to Restart", 0, 30);
-      }
-
       if (keyPressed[32] === true) {
         document.location.reload();
         startGame();
       }
     }
 
-    function checkCollision(fruit) {
-      return sx < fruit.x + fruitsSize &&
-        sx + sw > fruit.x &&
-        sy < fruit.y + fruitsSize &&
-        sy + sh > fruit.y;
+    function updatePlayerPosition() {
+      if (keyPressed[37]) { sx -= 12; } // 왼쪽으로 이동 
+      if (keyPressed[39]) { sx += 12; } // 오른쪽으로 이동
+
+      // 고양이가 캔버스 왼쪽 경계를 넘지 않도록 함.
+      if (sx < 0) {
+        sx = 0;
+      }
+
+      // 고양이가 캔버스 오른쪽 경계를 넘지 않도록 함.
+      if (sx + sw > canvas.width) {
+        sx = canvas.width - sw;
+      }
     }
 
-    function createFruits() {
-      // 과일 생성 간격을 랜덤으로 설정
-      var interval = Math.floor(Math.random() * (100 - 20 + 1)) + 1000; // 
-
-      // 과일 객체 생성
-      setTimeout(function () {
-        var fruitIndex = Math.floor(Math.random() * fruitsName.length); // 랜덤한 과일 종류 선택
-        var fruit = {
-          name: fruitsName[fruitIndex], // 과일 이름
-          x: Math.floor(Math.random() * (canvas.width - fruitsSize)), // 랜덤한 x 위치
-          y: -fruitsSize, // 화면 상단에서 시작
-          speed: Math.random() * 5 + 5 // 랜덤한 속도
-        };
-
-        fruits.push(fruit); // 생성된 과일을 배열에 추가
-
-        createFruits(); // 재귀적으로 호출하여 계속해서 과일 생성
-      }, interval);
-    }
-
-    function createRock() {
+    // 과일과 바위를 생성하는 함수
+    function createObject(type) {
       var interval = Math.floor(Math.random() * (100 - 20 + 1)) + 1000;
 
       setTimeout(function () {
-        var rock = {
-          x: Math.floor(Math.random() * (canvas.width - fruitsSize)), // 랜덤한 x 위치
-          y: -fruitsSize, // 화면 상단에서 시작
-          speed: rockSpeed
-        };
+        var object;
+        if (type === "fruit") {
+          var fruitIndex = Math.floor(Math.random() * fruitsName.length);
+          object = {
+            name: fruitsName[fruitIndex],
+            x: Math.floor(Math.random() * (canvas.width - fruitsSize)),
+            y: -fruitsSize,
+            speed: Math.random() * 5 + 5
+          };
+          fruits.push(object);
+        } else if (type === "rock") {
+          object = {
+            x: Math.floor(Math.random() * (canvas.width - fruitsSize)),
+            y: -fruitsSize,
+            speed: rockSpeed
+          };
+          rocks.push(object);
+          rockSpeed += rockSpeedIncrement;
+        }
 
-        rocks.push(rock); // 생성된 장애물을 배열에 추가
-        rockSpeed += rockSpeedIncrement;
-
-        createRock(); // 재귀적으로 호출하여 계속해서 장애물 생성
+        createObject(type); // 같은 타입의 객체를 계속해서 생성
       }, interval);
+    }
+
+    // 과일 생성
+    function createFruits() {
+      createObject("fruit");
+    }
+
+    // 바위 생성
+    function createRock() {
+      createObject("rock");
+    }
+
+    // 과일과 바위를 화면에 그려냄
+    function drawObjects() {
+      fruits.forEach(function (fruit, index) {
+        updateAndDrawFruit(fruit, index);
+      });
+
+      rocks.forEach(function (rock, index) {
+        updateAndDrawRock(rock, index);
+      });
+    }
+
+    function updateAndDrawFruit(fruit, index) {
+      fruit.y += fruit.speed;
+      drawImage(`./source/${fruit.name}.png`, fruit.x, fruit.y, fruitsSize);
+
+      if (fruit.y > canvas.height) {
+        fruits.splice(index, 1);
+      }
+
+      if (checkCollision(fruit)) {
+        var getSound = document.getElementById('get')
+        getSound.play();
+        getSound.volume = 0.3;
+        fruits.splice(index, 1);
+        score += 10;
+      }
+    }
+
+    function updateAndDrawRock(rock, index) {
+      rock.y += rock.speed;
+      drawImage(`./source/rock.png`, rock.x, rock.y, 93, 66);
+
+      if (rock.y > canvas.height) {
+        rocks.splice(index, 1);
+      }
+
+      if (checkCollision(rock)) {
+        endGame();
+      }
+    }
+
+    function drawImage(src, x, y, width, height = width) {
+      let image = new Image;
+      image.src = src;
+      ctx.drawImage(image, x, y, width, height);
+    }
+
+    // 게임 종료
+    function endGame() {
+      document.getElementById('gameover').play();
+      document.getElementById('bgm').pause();
+      STATE_START = false;
+      STATE_GAMEOVER = true;
+    }
+
+    function update() {
+      handleKeyPress();
+
+      if (STATE_START) {
+        updatePlayerPosition(); // 고양이 위치 업데이트
+        drawGame(); // 게임화면을 그려냄
+        drawObjects(); // 과일과 바위를 그려냄
+      } else if (STATE_GAMEOVER) {
+        drawText("bold 100px arial", "#313B95", "center", "Game Over", 0, -30);
+        drawText("bold 50px arial", "#000000", "center", "Spacebar to Restart", 0, 30);
+      }
+    }
+
+    // 충돌 검사
+    function checkCollision(item) {
+      return sx < item.x + fruitsSize &&
+        sx + sw > item.x &&
+        sy < item.y + fruitsSize &&
+        sy + sh > item.y;
     }
 
     function getKeyDown(event) {
