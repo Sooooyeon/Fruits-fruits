@@ -41,7 +41,7 @@
     // 고양이
     var cat, sx, sy, sw = 100, sh = 138;
 
-    // 배경이미지
+    // 게임 실행 화면 배경
     var background;
 
     // 과일
@@ -62,7 +62,7 @@
     // 키 상태 (게임시작 : enter, 게임다시 시작 : space, 방향키)
     var keyPressed = [];
 
-    // 타이머
+    // 반복 루틴
     var loopInstance;
 
     // 점수
@@ -169,7 +169,7 @@
 
     // 과일과 바위를 생성하는 함수
     function createObject(type) {
-      var interval = Math.floor(Math.random() * (100 - 20 + 1)) + 1000;
+      var interval = Math.floor(Math.random() * 100) + 1000;
 
       setTimeout(function () {
         var object;
