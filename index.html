@@ -48,6 +48,13 @@
     var fruits = new Array();
     var fruitsName = ['orange', 'peach', 'watermelon', 'pear', 'cherry']
     var fruitsSize = 54;
+    var fruitScores = {
+        'orange': 1,
+        'peach': 2,
+        'watermelon': 3,
+        'pear': 4,
+        'cherry': 5
+      };
 
     // 바위
     var rocks = new Array();
@@ -230,7 +237,7 @@
         getSound.play();
         getSound.volume = 0.3;
         fruits.splice(index, 1);
-        score += 3;
+        score += fruitScores[fruit.name]; // 각 과일의 점수를 더함
       }
     }
 
@@ -247,7 +254,8 @@
       }
 
       if (score >= 100) {
-        winGame()
+        drawGame();
+        winGame();
       }
     }
 
